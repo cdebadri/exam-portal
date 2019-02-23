@@ -2,7 +2,7 @@
 <v-container justify-center fluid class="central">
     <v-layout wrap>
         <v-flex xs12 sm12 md8 lg8>
-            <div v-if="$mq === 'mobile'">
+            <div v-if="$mq === 'sm'">
                 <!--<v-btn round color="purple" dark @click="changeForm">Register For Free</v-btn> -->
             </div>
             <div v-else>

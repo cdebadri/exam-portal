@@ -11,7 +11,9 @@ Vue.use(VueScrollTo)
 
 Vue.use(VueMq, {
   breakpoints: {
-    mobile: 450
+    sm: 600,
+    md: 1264,
+    lg: 1904
   }
 })
 
