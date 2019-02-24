@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container fluid ma-0 pa-0>
         <v-toolbar dark color="purple">
             <v-toolbar-title>Exam Portal</v-toolbar-title>
             <v-spacer></v-spacer>
