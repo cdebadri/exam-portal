@@ -9,9 +9,9 @@
             <v-btn flat class="caption">Forgot password?</v-btn>
         </div>
         <div>
-            <v-checkbox class="move-left" color="purple" :label="`Remember me`">
-            </v-checkbox>
-            <v-btn round dark class="move-right" color="purple">Log in</v-btn>
+            <!--<v-checkbox class="move-left" color="white" :label="`Remember me`">
+            </v-checkbox>-->
+            <v-btn round dark class="move-right" color="purple" to="/exam">Log in</v-btn>
         </div>
     </v-form>
 </template>
