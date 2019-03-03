@@ -4,10 +4,13 @@ import App from './App.vue'
 import router from './router'
 import VueScrollTo from 'vue-scrollto'
 import VueMq from 'vue-mq'
+import VueSession from 'vue-session'
 
 Vue.config.productionTip = false
 
 Vue.use(VueScrollTo)
+
+Vue.use(VueSession)
 
 Vue.use(VueMq, {
   breakpoints: {
