@@ -7,7 +7,7 @@
             <v-text-field type="password" label="Password" required v-model="password">
             </v-text-field>
             <div class="text-xs-right">
-                <v-btn flat class="caption" @click="forgotPasswordDialog = true">Forgot password?</v-btn>
+                <v-btn flat class="caption" @click="dialog = true; info = 3; action = false">Forgot password?</v-btn>
             </div>
             <div>
                 <!--<v-checkbox class="move-left" color="white" :label="`Remember me`">
@@ -18,32 +18,21 @@
         <v-dialog v-model="dialog" persistent width="400">
             <v-card>
                 <v-card-title primary-title>
-                    <div><h3 class="headline red--text">Attention!</h3></div>
+                    <div><h3 class="headline purple--text">Attention!</h3></div>
                 </v-card-title>
                 <v-card-text>
-                    <div v-if=""><ProgressCircle /></div>
-                    <div v-else>{{ message }}</div>
+                    <div v-if="info == 1" class="text-xs-center"><ProgressCircle /></div>
+                    <div v-else-if="info == 2">{{ message }}</div>
+                    <div v-else>
+                        <v-form ref="forgotPasswordForm">
+                            <v-text-field label="User Name" required v-model="forgotPasswordName">
+                            </v-text-field>
+                        </v-form>
+                    </div>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn round dark color="purple" @click="dialog = false">OK</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-        <v-dialog v-model="forgotPasswordDialog" persistent width="400">
-            <v-card>
-                <v-card-title primary-title>
-                    <div><h3 class="headline red--text">Forgot Password</h3></div>
-                </v-card-title>
-                <v-card-text>
-                    <v-form ref="forgotPasswordForm">
-                        <v-text-field label="User Name" required v-model="forgotPasswordName">
-                        </v-text-field>
-                    </v-form>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn round dark color="purple" @click="forgotPassword">OK</v-btn>
+                    <v-btn round dark color="purple" @click="dialog = false" :disabled="action">OK</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -73,13 +62,18 @@ export default {
             username: '',
             password: '',
             message: '',
+            info: 1, //1: progress, 2: message, 3: forgot-password
             dialog: false,
             forgotPasswordDialog: false,
-            forgotPasswordName: ''
+            forgotPasswordName: '',
+            action: false
         }
     },
     methods: {
         login: function() {
+            this.dialog = true
+            this.info = 1
+            this.action = true
             axios.post('https://www.campuskarma.in/services/api/rest/json/?method=exam.gettoken', null, {
                 params: {
                     username: this.username,
@@ -94,22 +88,25 @@ export default {
                     console.log('session started')
                     this.$router.push('/exam')           
                 } else {
+                    this.info = 2
+                    this.action = false
                     this.message = response.data.result.message
-                    this.dialog = true
                 }
             }).catch((err) => {
                 console.warn(err)
             })
         },
         forgotPassword: function() {
-            this.forgotPasswordDialog = false
+            this.info = 1
+            this.action = true
             axios.get('https://www.campuskarma.in/services/api/rest/json/?method=exam.request_password', {
                 params: {
                     username: this.forgotPasswordName
                 }
             }).then((response) => {
+                this.info = 2
+                this.action = false
                 this.message = response.data.result.message
-                this.dialog = true
             }).catch((err) => {
                 console.warn(err)
             })

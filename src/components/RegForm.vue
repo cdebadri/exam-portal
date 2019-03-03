@@ -14,14 +14,18 @@
             </v-text-field>-->
             <v-btn round dark class="move-right" color="purple" @click="submitForm">Register</v-btn>
         </v-form>
-        <v-dialog v-model="dialog" persistent width="300">
+        <v-dialog v-model="dialog" persistent width="400">
             <v-card>
                 <v-card-title primary-title>
-                    <div><h3 class="headline red--text">Attention!</h3></div>
+                    <div><h3 class="headline purple--text">Attention!</h3></div>
                 </v-card-title>
-                <v-card-text>{{ message }}</v-card-text>
+                <v-card-text>
+                    <div v-if="info == 1" class="text-xs-center"><ProgressCircle /></div>
+                    <div v-else class="text-xs-center">{{ message }}</div>
+                </v-card-text>
                 <v-card-actions>
-                    <v-btn round dark color="purple" @click="gotoLogin">OK</v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn round dark color="purple" @click="gotoLogin" :disabled="action">OK</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -30,29 +34,38 @@
 
 <script>
 import axios from 'axios'
+import ProgressCircle from './ProgressCircle.vue'
 export default {
     name: 'RegForm',
+    components: {
+        ProgressCircle
+    },
     data() {
         return {
-            valid: false,
+            valid: true,
             name: '',
             email: '',
             emailRules: [
                 v => !!v || 'Email is required',
-                v => this.verify_email(v) || 'Email already exists'
+                v => /.+@.+/.test(v) || 'E-mail must be valid'
             ],
             username: '',
             usernameRules: [
-                v => !!v || 'User Name taken',
-                v => this.verify_username(v) || 'User Name taken'
+                v => !!v || 'User Name Required'
             ],
             password: '',
             dialog: false,
-            message: ''
+            info: 1, //1: progress, 2: message
+            action: false,
+            message: '',
+            regSuccess: false
         }
     },
     methods: {
         submitForm: function() {
+            this.dialog = true
+            this.info = 1
+            this.action = true
             axios.get('https://www.campuskarma.in/services/api/rest/json/?method=exam.user_register', {
                 params: {
                     name: this.name,
@@ -61,36 +74,43 @@ export default {
                     password: this.password
                 }
             }).then((response) => {
+                this.action = false
+                this.info = 2
                 this.message = response.data.result.message
-                this.dialog = response.data.result.status
-                if (!this.dialog)
+                if (response.data.result.status) {
                     this.$refs.regform.reset()
-            })
-        },
-        verify_email: function(email) {
-            axios.get('https://www.campuskarma.in/services/api/rest/json/?method=exam.check_email', {
-                params: {
-                    email: email
+                    this.regSuccess = true
                 }
-            }).then((response) => {
-                if (response.data.result.status)
-                    return true
+            }).catch((err) => {
+                console.warn(err)
             })
-            return false
         },
-        verify_username: function(username) {
-            axios.get('https://www.campuskarma.in/services/api/rest/json/?method=exam.check_username', {
-                params: {
-                    username: username
-                }
-            }).then((response) => {
-                if (response.data.result.status)
-                    return true
-            })
-            return false
-        },
+        // verify_email: function(email) {
+        //     axios.get('https://www.campuskarma.in/services/api/rest/json/?method=exam.check_email', {
+        //         params: {
+        //             email: email
+        //         }
+        //     }).then((response) => {
+        //         if (response.data.result.status)
+        //             return false
+        //     })
+        //     return true
+        // },
+        // verify_username: function(username) {
+        //     axios.get('https://www.campuskarma.in/services/api/rest/json/?method=exam.check_username', {
+        //         params: {
+        //             username: username
+        //         }
+        //     }).then((response) => {
+        //         if (response.data.result.status)
+        //             return false
+        //     })
+        //     return true
+        // },
         gotoLogin: function() {
-            this.$emit('change')
+            if(this.regSuccess)
+                this.$emit('change')
+            this.dialog = false
         }
     },    
 }
