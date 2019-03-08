@@ -24,7 +24,7 @@
 </v-container>
 </template>
 
-<style scoped>
+<style>
     .central {
         display: flex;
         align-items: center;
